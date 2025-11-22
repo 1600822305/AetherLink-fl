@@ -1,28 +1,18 @@
-<div align="center">
-  <img src="assets/app_icon.png" alt="AetherLink" width="120" />
-  <h1>AetherLink</h1>
-  <p><strong>Next-Generation AI Chat Interface</strong></p>
-  <p>A powerful, cross-platform AI assistant built with Flutter</p>
+# Kelivo
 
-  <p>
-    <a href="#features">Features</a> •
-    <a href="#installation">Installation</a> •
-    <a href="#usage">Usage</a> •
-    <a href="#contributing">Contributing</a>
-  </p>
+**Next-Generation AI Chat Application**
 
-English
-</div>
+A powerful, cross-platform AI assistant built with Flutter
 
 ---
 
 ## 📖 About
 
-AetherLink is a modern, feature-rich AI chat application that brings the power of large language models to your fingertips. Built with Flutter, it offers a seamless experience across all major platforms with an intuitive, beautiful interface.
+Kelivo is a modern, feature-rich AI chat application that brings the power of large language models to your fingertips. Built with Flutter, it offers a seamless experience across all major platforms with an intuitive, beautiful interface.
 
-Whether you're a developer, researcher, or enthusiast, AetherLink provides the tools you need to interact with AI models efficiently and effectively.
+Whether you're a developer, researcher, or enthusiast, Kelivo provides the tools you need to interact with AI models efficiently and effectively.
 
-## 🎯 Why AetherLink?
+## 🎯 Features
 
 - **Universal Compatibility** - Works seamlessly on mobile and desktop
 - **Privacy First** - Your data stays on your device
@@ -69,7 +59,6 @@ Whether you're a developer, researcher, or enthusiast, AetherLink provides the t
 | 🪟 Windows | ✅ Stable | Windows 10+ |
 | 🍏 macOS | ✅ Stable | macOS 10.14+ |
 | 🐧 Linux | ✅ Stable | Ubuntu 20.04+ |
-| 🎯 HarmonyOS | 🚧 Beta | See [aetherlink-ohos](https://github.com/Chevey339/aetherlink-ohos) |
 
 ## 🚀 Installation
 
@@ -82,14 +71,14 @@ Whether you're a developer, researcher, or enthusiast, AetherLink provides the t
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/aetherlink.git
-cd aetherlink
+git clone https://github.com/1600822305/AetherLink-fl.git
+cd kelivo-master
 
 # Install dependencies
 flutter pub get
 
 # Run on your platform
-flutter run -d <device>
+flutter run
 ```
 
 ### Platform-Specific Setup
@@ -141,7 +130,7 @@ We welcome contributions! Here's how you can help:
 
 ## ⭐ Show Your Support
 
-If you find AetherLink useful, please consider:
+If you find Kelivo useful, please consider:
 
 - ⭐ Starring the repository
 - 🐛 Reporting bugs
@@ -152,18 +141,16 @@ If you find AetherLink useful, please consider:
 
 This project is licensed under the AGPL-3.0 License. See [LICENSE](LICENSE) for more information.
 
-## � Contact
+## 📬 Contact
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/aetherlink/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/aetherlink/discussions)
+- **Issues**: [GitHub Issues](https://github.com/1600822305/AetherLink-fl/issues)
 
 ## 🙏 Acknowledgments
 
-Built with passion using Flutter. Thanks to the open-source community for making this possible.
+Built with Flutter. Thanks to the open-source community for making this possible.
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by developers, for developers</p>
-  <p>© 2024 AetherLink. All rights reserved.</p>
+  <p>Made with ❤️ using Flutter</p>
 </div>
