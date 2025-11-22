@@ -1,4 +1,4 @@
-# Kelivo
+# AetherLink
 
 **Next-Generation AI Chat Application**
 
@@ -8,9 +8,9 @@ A powerful, cross-platform AI assistant built with Flutter
 
 ## 📖 About
 
-Kelivo is a modern, feature-rich AI chat application that brings the power of large language models to your fingertips. Built with Flutter, it offers a seamless experience across all major platforms with an intuitive, beautiful interface.
+AetherLink is a modern, feature-rich AI chat application that brings the power of large language models to your fingertips. Built with Flutter, it offers a seamless experience across all major platforms with an intuitive, beautiful interface.
 
-Whether you're a developer, researcher, or enthusiast, Kelivo provides the tools you need to interact with AI models efficiently and effectively.
+Whether you're a developer, researcher, or enthusiast, AetherLink provides the tools you need to interact with AI models efficiently and effectively.
 
 ## 🎯 Features
 
@@ -130,7 +130,7 @@ We welcome contributions! Here's how you can help:
 
 ## ⭐ Show Your Support
 
-If you find Kelivo useful, please consider:
+If you find AetherLink useful, please consider:
 
 - ⭐ Starring the repository
 - 🐛 Reporting bugs
