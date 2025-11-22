@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../icons/lucide_adapter.dart';
 import '../../../core/providers/settings_provider.dart';
 import '../../model/pages/default_model_page.dart';
-import '../../provider/pages/providers_page.dart';
+import '../../provider/pages/providers_page_modern.dart';
 import 'display_settings_page.dart';
 import '../../../core/services/chat/chat_service.dart';
 import '../../mcp/pages/mcp_page.dart';
@@ -88,21 +88,25 @@ class SettingsPage extends StatelessWidget {
       }
     }
 
-    // iOS-style section header (neutral color, not theme color)
-    Widget header(String text, {bool first = false}) => Padding(
-          padding: EdgeInsets.fromLTRB(12, first ? 2 : 12, 12, 6),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: cs.onSurface.withOpacity(0.8),
-            ),
-          ),
-        );
+    // 现代风格分组标题
+    Widget sectionHeader(String text, {bool first = false}) => Padding(
+      padding: EdgeInsets.fromLTRB(16, first ? 8 : 24, 16, 12),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: cs.onSurface.withOpacity(0.7),
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
 
     return Scaffold(
+      backgroundColor: cs.background,
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: cs.surface,
         leading: Tooltip(
           message: l10n.settingsPageBackButton,
           child: _TactileIconButton(
@@ -112,376 +116,321 @@ class SettingsPage extends StatelessWidget {
             onTap: () => Navigator.of(context).maybePop(),
           ),
         ),
-        title: Text(l10n.settingsPageTitle),
+        title: Text(
+          l10n.settingsPageTitle,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: cs.onSurface,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: [
           if (!settings.hasAnyActiveModel)
-            Material(
-              color: cs.errorContainer.withOpacity(0.30),
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(Lucide.MessageCircleWarning, size: 18, color: cs.error),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        l10n.settingsPageWarningMessage,
-                        style: TextStyle(fontSize: 12, color: cs.onSurface.withOpacity(0.8)),
-                      ),
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: cs.errorContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(Lucide.MessageCircleWarning, size: 20, color: cs.error),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.settingsPageWarningMessage,
+                      style: TextStyle(fontSize: 13, color: cs.onSurface),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
-          // 通用设置：使用iOS风格分组卡片，黑色（中性）图标与标题，无描述
-          header(l10n.settingsPageGeneralSection, first: true),
-          _iosSectionCard(children: [
-            _iosNavRow(
-              context,
-              icon: Lucide.SunMoon,
-              label: l10n.settingsPageColorMode,
-              detailText: modeLabel(settings.themeMode),
-              onTap: pickThemeMode,
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Monitor,
-              label: l10n.settingsPageDisplay,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const DisplaySettingsPage()),
-                );
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Bot,
-              label: l10n.settingsPageAssistant,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const AssistantSettingsPage()),
-                );
-              },
-            ),
-          ]),
+          // 基本设置
+          sectionHeader('基本设置', first: true),
+          _modernSectionCard(
+            context,
+            children: [
+              _modernSettingItem(
+                context,
+                icon: Lucide.Palette,
+                title: '外观',
+                description: '主题、字体大小和语言设置',
+                detailText: modeLabel(settings.themeMode),
+                onTap: pickThemeMode,
+              ),
+              _modernDivider(context),
+              _modernSettingItem(
+                context,
+                icon: Lucide.Settings,
+                title: '行为',
+                description: '消息发送和通知设置',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const DisplaySettingsPage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
 
-          const SizedBox(height: 12),
-          header(l10n.settingsPageModelsServicesSection),
-          _iosSectionCard(children: [
-            _iosNavRow(
-              context,
-              icon: Lucide.Heart,
-              label: l10n.settingsPageDefaultModel,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const DefaultModelPage()),
-                );
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Boxes,
-              label: l10n.settingsPageProviders,
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProvidersPage()));
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Earth,
-              label: l10n.settingsPageSearch,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SearchServicesPage()),
-                );
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Volume2,
-              label: l10n.settingsPageTts,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const TtsServicesPage()),
-                );
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Terminal,
-              label: l10n.settingsPageMcp,
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const McpPage()));
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Zap,
-              label: l10n.settingsPageQuickPhrase,
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const QuickPhrasesPage()));
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Layers,
-              label: l10n.settingsPageInstructionInjection,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const InstructionInjectionPage()),
-                );
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.EthernetPort,
-              label: l10n.settingsPageNetworkProxy,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const NetworkProxyPage()),
-                );
-              },
-            ),
-          ]),
+          // 模型服务
+          sectionHeader('模型服务'),
+          _modernSectionCard(
+            context,
+            children: [
+              _modernSettingItem(
+                context,
+                icon: Lucide.Heart,
+                title: '配置模型',
+                description: '管理AI模型和API密钥',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ProvidersPageModern(),
+                    ),
+                  );
+                },
+              ),
+              _modernDivider(context),
+              _modernSettingItem(
+                context,
+                icon: Lucide.Wand2,
+                title: '智能体提示词集合',
+                description: '浏览和使用内置的丰富提示词模板',
+                onTap: () {
+                  // TODO: 导航到智能体提示词页面
+                },
+              ),
+              _modernDivider(context),
+              _modernSettingItem(
+                context,
+                icon: Lucide.Globe,
+                title: '网络搜索',
+                description: '配置网络搜索和相关服务',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const SearchServicesPage(),
+                    ),
+                  );
+                },
+              ),
+              _modernDivider(context),
+              _modernSettingItem(
+                context,
+                icon: Lucide.Volume2,
+                title: '语音功能',
+                description: '语音识别和文本转语音设置',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const TtsServicesPage()),
+                  );
+                },
+              ),
+              _modernDivider(context),
+              _modernSettingItem(
+                context,
+                icon: Lucide.Terminal,
+                title: 'MCP 服务器',
+                description: '高级服务器配置',
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const McpPage()));
+                },
+              ),
+              _modernDivider(context),
+              _modernSettingItem(
+                context,
+                icon: Lucide.Zap,
+                title: '快捷短语',
+                description: '创建常用短语模板',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const QuickPhrasesPage()),
+                  );
+                },
+              ),
+            ],
+          ),
 
-          const SizedBox(height: 12),
-          header(l10n.settingsPageDataSection),
-          _iosSectionCard(children: [
-            _iosNavRow(
-              context,
-              icon: Lucide.Database,
-              label: l10n.settingsPageBackup,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const BackupPage()),
-                );
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.HardDrive,
-              label: l10n.settingsPageChatStorage,
-              detailBuilder: (ctx) {
-                String fmtBytes(int bytes) {
-                  const kb = 1024;
-                  const mb = kb * 1024;
-                  const gb = mb * 1024;
-                  if (bytes >= gb) return (bytes / gb).toStringAsFixed(2) + ' GB';
-                  if (bytes >= mb) return (bytes / mb).toStringAsFixed(2) + ' MB';
-                  if (bytes >= kb) return (bytes / kb).toStringAsFixed(1) + ' KB';
-                  return '$bytes B';
-                }
-                final l10n = AppLocalizations.of(ctx)!;
-                final svc = ctx.read<ChatService>();
-                return FutureBuilder<UploadStats>(
-                  future: svc.getUploadStats(),
-                  builder: (context, snapshot) {
-                    final data = snapshot.data;
-                    if (snapshot.connectionState != ConnectionState.done) {
-                      return Text(l10n.settingsPageCalculating, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withOpacity(0.6), fontSize: 13));
-                    }
-                    final count = data?.fileCount ?? 0;
-                    final size = fmtBytes(data?.totalBytes ?? 0);
-                    return Text(l10n.settingsPageFilesCount(count, size), style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface.withOpacity(0.6), fontSize: 13));
-                  },
-                );
-              },
-              onTap: null, // disabled: no tap, no chevron, no press feedback
-            ),
-          ]),
+          // 其他设置
+          sectionHeader('其他设置'),
+          _modernSectionCard(
+            context,
+            children: [
+              _modernSettingItem(
+                context,
+                icon: Lucide.Database,
+                title: '数据设置',
+                description: '管理数据存储和隐私选项',
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const BackupPage()));
+                },
+              ),
+              _modernDivider(context),
+              _modernSettingItem(
+                context,
+                icon: Lucide.BadgeInfo,
+                title: '关于我们',
+                description: '应用信息和技术支持',
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const AboutPage()));
+                },
+              ),
+            ],
+          ),
 
-          const SizedBox(height: 12),
-          header(l10n.settingsPageAboutSection),
-          _iosSectionCard(children: [
-            _iosNavRow(
-              context,
-              icon: Lucide.BadgeInfo,
-              label: l10n.settingsPageAbout,
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutPage()));
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Library,
-              label: l10n.settingsPageDocs,
-              onTap: () async {
-                final uri = Uri.parse('https://aetherlink.psycheas.top/');
-                if (!await launchUrl(uri, mode: LaunchMode.platformDefault)) {
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                }
-              },
-            ),
-            _iosDivider(context),
-            _iosNavRow(
-              context,
-              icon: Lucide.Heart,
-              label: l10n.settingsPageSponsor,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SponsorPage()),
-                );
-              },
-            ),
-            // _iosDivider(context),
-            // _iosNavRow(
-            //   context,
-            //   icon: Lucide.Share2,
-            //   label: l10n.settingsPageShare,
-            //   onTap: () async {
-            //     // Provide anchor rect from overlay for iPad share sheet
-            //     Rect anchor;
-            //     try {
-            //       final overlay = Overlay.of(context);
-            //       final ro = overlay?.context.findRenderObject();
-            //       if (ro is RenderBox && ro.hasSize) {
-            //         final center = ro.size.center(Offset.zero);
-            //         final global = ro.localToGlobal(center);
-            //         anchor = Rect.fromCenter(center: global, width: 1, height: 1);
-            //       } else {
-            //         final size = MediaQuery.of(context).size;
-            //         anchor = Rect.fromCenter(center: Offset(size.width / 2, size.height / 2), width: 1, height: 1);
-            //       }
-            //     } catch (_) {
-            //       final size = MediaQuery.of(context).size;
-            //       anchor = Rect.fromCenter(center: Offset(size.width / 2, size.height / 2), width: 1, height: 1);
-            //     }
-            //     await Share.share(l10n.settingsShare, sharePositionOrigin: anchor);
-            //   },
-            // ),
-          ]),
-
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
         ],
       ),
     );
   }
 }
 
-// --- iOS-style widgets for Settings page ---
+// --- 现代风格设置页面组件 ---
 
-Widget _iosSectionCard({required List<Widget> children}) {
-  return Builder(builder: (context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-    // Light: white with slight transparency; Dark: subtle translucent dark
-    final Color bg = isDark ? Colors.white10 : Colors.white.withOpacity(0.96);
-    return Container(
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: cs.outlineVariant.withOpacity(isDark ? 0.08 : 0.06), width: 0.6),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(children: children),
-      ),
-    );
-  });
-}
-
-Widget _iosDivider(BuildContext context) {
+// 现代风格分组卡片
+Widget _modernSectionCard(
+  BuildContext context, {
+  required List<Widget> children,
+}) {
   final cs = Theme.of(context).colorScheme;
-  // Restore previous visual: align with icon slot (36) + gap (12) + padding (12)
-  return Divider(height: 6, thickness: 0.6, indent: 54, endIndent: 12, color: cs.outlineVariant.withOpacity(0.18));
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
+  return Container(
+    decoration: BoxDecoration(
+      color: cs.surface,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: cs.outlineVariant.withOpacity(0.3), width: 1),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    clipBehavior: Clip.antiAlias,
+    child: Column(children: children),
+  );
 }
 
-// Shared color tween wrapper to mimic iOS gentle press color transition
-class _AnimatedPressColor extends StatelessWidget {
-  const _AnimatedPressColor({required this.pressed, required this.base, required this.builder});
-  final bool pressed;
-  final Color base;
-  final Widget Function(Color color) builder;
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final target = pressed ? (Color.lerp(base, isDark ? Colors.black : Colors.white, 0.55) ?? base) : base;
-    return TweenAnimationBuilder<Color?>(
-      tween: ColorTween(end: target),
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOutCubic,
-      builder: (context, color, _) => builder(color ?? base),
-    );
-  }
+// 现代风格分割线
+Widget _modernDivider(BuildContext context) {
+  final cs = Theme.of(context).colorScheme;
+  return Divider(
+    height: 1,
+    thickness: 1,
+    indent: 68,
+    endIndent: 16,
+    color: cs.outlineVariant.withOpacity(0.2),
+  );
 }
 
-Widget _iosNavRow(
+// 现代风格设置项
+Widget _modernSettingItem(
   BuildContext context, {
   required IconData icon,
-  required String label,
+  required String title,
+  String? description,
   VoidCallback? onTap,
   String? detailText,
   Widget Function(BuildContext ctx)? detailBuilder,
 }) {
   final cs = Theme.of(context).colorScheme;
   final interactive = onTap != null;
+
   return _TactileRow(
     onTap: onTap,
     pressedScale: 1.00,
-    haptics: false,
+    haptics: true,
     builder: (pressed) {
-      final baseColor = cs.onSurface.withOpacity(0.9);
-      return _AnimatedPressColor(
-        pressed: pressed,
-        base: baseColor,
-        builder: (c) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-            child: Row(
-              children: [
-                SizedBox(width: 36, child: Icon(icon, size: 20, color: c)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(fontSize: 15, color: c, fontWeight: FontWeight.w500),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+      return Container(
+        color: pressed ? cs.onSurface.withOpacity(0.05) : Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            // Icon
+            Container(
+              width: 36,
+              height: 36,
+              alignment: Alignment.center,
+              child: Icon(icon, size: 24, color: cs.primary),
+            ),
+            const SizedBox(width: 16),
+            // Title & Description
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  if (description != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: cs.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            // Detail & Arrow
+            if (detailBuilder != null) detailBuilder(context),
+            if (detailText != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(
+                  detailText,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: cs.onSurface.withOpacity(0.5),
                   ),
                 ),
-                if (detailBuilder != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(fontSize: 13, color: cs.onSurface.withOpacity(0.6)),
-                      child: detailBuilder(context),
-                    ),
-                  )
-                else if (detailText != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: Text(detailText, style: TextStyle(fontSize: 13, color: cs.onSurface.withOpacity(0.6))),
-                  ),
-                if (interactive) Icon(Lucide.ChevronRight, size: 16, color: c),
-              ],
-            ),
-          );
-        },
+              ),
+            if (interactive)
+              Icon(
+                Lucide.ChevronRight,
+                size: 20,
+                color: cs.onSurface.withOpacity(0.4),
+              ),
+          ],
+        ),
       );
     },
   );
 }
 
+// Tactile Row Widget
 class _TactileRow extends StatefulWidget {
-  const _TactileRow({required this.builder, this.onTap, this.pressedScale = 1.00, this.haptics = true});
+  const _TactileRow({
+    required this.builder,
+    this.onTap,
+    this.pressedScale = 1.00,
+    this.haptics = true,
+  });
   final Widget Function(bool pressed) builder;
   final VoidCallback? onTap;
   final double pressedScale;
@@ -495,6 +444,7 @@ class _TactileRowState extends State<_TactileRow> {
   void _setPressed(bool v) {
     if (_pressed != v) setState(() => _pressed = v);
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -505,7 +455,8 @@ class _TactileRowState extends State<_TactileRow> {
       onTap: widget.onTap == null
           ? null
           : () {
-              if (widget.haptics && context.read<SettingsProvider>().hapticsOnListItemTap) {
+              if (widget.haptics &&
+                  context.read<SettingsProvider>().hapticsOnListItemTap) {
                 Haptics.soft();
               }
               widget.onTap!.call();
@@ -515,7 +466,7 @@ class _TactileRowState extends State<_TactileRow> {
   }
 }
 
-// Icon-only tactile button for AppBar: no ripple, slight press scale
+// Icon-only tactile button for AppBar
 class _TactileIconButton extends StatefulWidget {
   const _TactileIconButton({
     required this.icon,
@@ -546,7 +497,12 @@ class _TactileIconButtonState extends State<_TactileIconButton> {
   Widget build(BuildContext context) {
     final base = widget.color;
     final pressColor = base.withOpacity(0.7);
-    final icon = Icon(widget.icon, size: widget.size, color: _pressed ? pressColor : base, semanticLabel: widget.semanticLabel);
+    final icon = Icon(
+      widget.icon,
+      size: widget.size,
+      color: _pressed ? pressColor : base,
+      semanticLabel: widget.semanticLabel,
+    );
 
     return Semantics(
       button: true,
@@ -575,7 +531,7 @@ class _TactileIconButtonState extends State<_TactileIconButton> {
   }
 }
 
-// Bottom sheet iOS-style option with tactile feedback (no ripple)
+// Bottom sheet iOS-style option
 Widget _sheetOption(
   BuildContext context, {
   required IconData icon,
@@ -590,33 +546,25 @@ Widget _sheetOption(
     onTap: onTap,
     builder: (pressed) {
       final base = cs.onSurface;
-      final target = pressed ? (Color.lerp(base, isDark ? Colors.black : Colors.white, 0.55) ?? base) : base;
       final bgTarget = pressed
-          ? (isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.05))
+          ? (isDark
+                ? Colors.white.withOpacity(0.06)
+                : Colors.black.withOpacity(0.05))
           : Colors.transparent;
-      return _AnimatedPressColor(
-        pressed: pressed,
-        base: base,
-        builder: (c) {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOutCubic,
-            color: bgTarget,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                SizedBox(width: 24, child: Icon(icon, size: 20, color: c)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(fontSize: 15, color: c),
-                  ),
-                ),
-              ],
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        color: bgTarget,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            SizedBox(width: 24, child: Icon(icon, size: 20, color: base)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(label, style: TextStyle(fontSize: 15, color: base)),
             ),
-          );
-        },
+          ],
+        ),
       );
     },
   );
@@ -624,5 +572,11 @@ Widget _sheetOption(
 
 Widget _sheetDivider(BuildContext context) {
   final cs = Theme.of(context).colorScheme;
-  return Divider(height: 1, thickness: 0.6, indent: 52, endIndent: 16, color: cs.outlineVariant.withOpacity(0.18));
+  return Divider(
+    height: 1,
+    thickness: 0.6,
+    indent: 52,
+    endIndent: 16,
+    color: cs.outlineVariant.withOpacity(0.18),
+  );
 }
